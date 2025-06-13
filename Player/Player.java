@@ -1,4 +1,5 @@
-package miniprojet_Marius_Nathan.java
+package miniprojet_Marius_Nathan.Player;
+import miniprojet_Marius_Nathan.Weapons.*;
 public class Player {
     private final String name;
     private int hp = 100;
@@ -27,7 +28,7 @@ public class Player {
         Player p = new Player("bob(pas le bricoleur du coup)");
         p.greet();
         p.takeDamage(15);
-        Weapon sabrelazer = new Weapon(10, 20);
+        Weapons sabrelazer = new Weapons(10, 20);
         int damage = sabrelazer.rollDamage();
         System.out.println("L'arme inflige " + damage + " dégâts !");
         p.takeDamage(damage);
