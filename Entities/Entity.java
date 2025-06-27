@@ -1,4 +1,5 @@
 package entities;
+import utils.DisplayUtils;
 
 public abstract class Entity {
     protected String name;
@@ -16,11 +17,14 @@ public abstract class Entity {
     public boolean isAlive() {
         return hp > 0;
     }
+    public void receiveHealing(int amount) {
+        this.hp += amount;
+    }
 
     public void receiveDamage(int damage) {
         int effectiveDamage = Math.max(0, damage - defense);
         hp -= effectiveDamage;
-        System.out.println(name + " reçoit " + effectiveDamage + " points de dégâts. (HP: " + hp + ")");
+        DisplayUtils.display(name + " reçoit " + effectiveDamage + " points de dégâts. (HP: " + hp + ")");
     }
 
     public int getAttack() {

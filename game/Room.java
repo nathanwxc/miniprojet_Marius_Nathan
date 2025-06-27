@@ -1,5 +1,5 @@
 package game;
-
+import utils.DisplayUtils;
 import entities.Monster;
 import entities.Player;
 import items.Potion;
@@ -16,11 +16,14 @@ public class Room {
     private boolean doorEast;
     private boolean doorWest;
     private RoomContent content;
+    
+    // Éventuellement, conserver une référence vers l'entité présente
     private Monster monster;
 
     public Room(int x, int y) {
         this.x = x;
         this.y = y;
+        // Les portes seront définies par le générateur de carte.
         doorNorth = false;
         doorSouth = false;
         doorEast = false;
@@ -41,56 +44,70 @@ public class Room {
     public RoomContent getContent() { return content; }
     
     public void generateContents() {
-        int roll = RandomUtils.nextInt(100);
-        if (roll < 40) {
-            content = RoomContent.EMPTY;
-        } else if (roll < 60) {
-            content = RoomContent.MONSTER;
-            monster = new Monster("Gobelin", 20, 10, 2);
-        } else if (roll < 95) {
-            content = RoomContent.LOOT;
+    int roll = RandomUtils.nextInt(100);
+    if (roll < 10) {
+        content = RoomContent.EMPTY;
+    } else if (roll < 60) {
+        content = RoomContent.MONSTER;
+        int monsterRoll = RandomUtils.nextInt(100);
+        if (monsterRoll > 50) {
+            monster = new Monster("Gobelin", 20, 7, 2);
+        } else if(monsterRoll < 10) {
+            // Génération dynamique des stats du RandomBoss
+            int bossHp      = 50 + RandomUtils.nextInt(51);  // 50 à 100 PV
+            int bossAttack  = 10 + RandomUtils.nextInt(11);  // 10 à 20 d’attaque
+            int bossDefense = 5  + RandomUtils.nextInt(6);   // 5 à 10 de défense
+            monster = new Monster("RandomBoss", bossHp, bossAttack, bossDefense);
         }
-        else {
-            content = RoomContent.EXIT;
+        else if(50 <monsterRoll && monsterRoll< 10){
+             monster = new Monster("Ravageur", 50, 10, 4);
         }
+    } else if (roll < 75) {
+        content = RoomContent.LOOT;
+        // loot potion…
+    } else if (roll < 99) {
+        content = RoomContent.LOOT;
+    } else {
+        content = RoomContent.EXIT;
     }
+}
 
     public void enter(Player player) {
-        System.out.println("Vous entrez dans la salle (" + x + ", " + y + ").");
+        DisplayUtils.display("Vous entrez dans la salle (" + x + ", " + y + ").");
         switch (content) {
             case MONSTER:
                 if (monster != null) {
-                    System.out.println("Un " + monster.getName() + " apparaît !");
+                    DisplayUtils.display("Un " + monster.getName() + " apparaît !");
                     combat(player, monster);
                     if (!monster.isAlive()) {
-                        System.out.println(monster.getName() + " est vaincu !");
+                        DisplayUtils.display(monster.getName() + " est vaincu !");
                         player.gainXP(50);
                         content = RoomContent.EMPTY;
                     }
                 }
                 break;
-             case LOOT:
-                System.out.println("Vous trouvez une potion de soin.");
+            case LOOT:
+                DisplayUtils.display("Vous trouvez une potion de soin.");
                 player.addItem(new Potion("Potion de soin", 20));
                 content = RoomContent.EMPTY;
-                break;    
+                break;
             case EXIT:
-                System.out.println("Vous avez trouvé la sortie du donjon !");
+                DisplayUtils.display("Vous avez trouvé la sortie du donjon !");
                 break;
             case EMPTY:
             default:
-                System.out.println("La salle est vide.");
+                DisplayUtils.display("La salle est vide.");
         }
     }
 
     private void combat(Player player, Monster monster) {
-        System.out.println("--- Combat ---");
+        DisplayUtils.display("--- Combat ---");
         while (player.isAlive() && monster.isAlive()) {
-            System.out.println(player.getName() + " attaque " + monster.getName());
+            DisplayUtils.display(player.getName() + " attaque " + monster.getName());
             monster.receiveDamage(player.getAttack());
             if (!monster.isAlive())
                 break;
-            System.out.println(monster.getName() + " attaque " + player.getName());
+            DisplayUtils.display(monster.getName() + " attaque " + player.getName());
             player.receiveDamage(monster.getAttack());
         }
     }
