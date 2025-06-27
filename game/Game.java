@@ -7,6 +7,7 @@ import utils.InventoryUtils;
 
 
 
+
 public class Game {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -21,7 +22,7 @@ public class Game {
             Room currentRoom = dungeon.getRoom(playerX, playerY);
             
             // On effectue l'action de la salle
-            currentRoom.enter(player);
+            currentRoom.enter(player, scanner);
             if (currentRoom.getContent() == Room.RoomContent.EXIT) {
                 DisplayUtils.display("Félicitations, vous avez quitté le donjon !");
                 break;

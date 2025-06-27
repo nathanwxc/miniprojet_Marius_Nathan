@@ -120,7 +120,7 @@ public class Player extends Entity {
         displayStats();
     }
 
-    /** Affiche les PV, l'attaque et la défense actuels */
+    /* Affiche les PV, l'attaque et la défense actuels */
     private void displayStats() {
         DisplayUtils.display(
             "Statistiques → PV: " + getHp() + "/" + getMaxHp() +

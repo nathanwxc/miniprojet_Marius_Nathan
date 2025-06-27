@@ -1,18 +1,18 @@
 package entities;
-import utils.DisplayUtils;
 
 public abstract class Entity {
     protected String name;
-    protected int hp;
-    protected int maxHp;
+    protected int hp;       // PV courants
+    protected int maxHp;    // PV maximum
     protected int attack;
     protected int defense;
 
+    
     public Entity(String name, int hp, int attack, int defense) {
-        this.name = name;
-        this.hp = hp;
+        this.name    = name;
+        this.hp      = hp;
         this.maxHp   = hp;
-        this.attack = attack;
+        this.attack  = attack;
         this.defense = defense;
     }
 
