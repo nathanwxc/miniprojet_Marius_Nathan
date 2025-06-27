@@ -1,5 +1,5 @@
 package entities;
-
+import items.Equipment;
 import utils.DisplayUtils;
 import items.Item;
 import items.Potion;
@@ -32,12 +32,19 @@ public class Player extends Entity {
 
     private void levelUp() {
         level++;
-        hp += 10;
-        attack += 2;
-        defense += 2;
-        DisplayUtils.display(name + " monte de niveau ! Niveau: " + level +
-                             " (HP: " + hp + ", Attaque: " + attack +
-                             ", Défense: " + defense + ")");
+        maxHp += 10;          // Augmente le maximum de PV
+        hp += 10;             // Donne aussi des PV courants
+        if (hp > maxHp) {     // Sans dépasser le maximum
+            hp = maxHp;
+        }
+        attack += 2;          // Bonus d'attaque
+        defense += 2;         // Bonus de défense
+        DisplayUtils.display(
+            name + " monte de niveau ! Niveau: " + level +
+            " (PV: " + hp + "/" + maxHp +
+            ", Attaque: " + attack +
+            ", Défense: " + defense + ")"
+        );
     }
 
     public void addItem(Item item) {
@@ -45,14 +52,81 @@ public class Player extends Entity {
         DisplayUtils.display(name + " récupère: " + item.getName());
     }
 
+    public List<Item> getInventory() {
+        return inventory;
+    }
+
+    public void useItem(int index) {
+    if (index < 0 || index >= inventory.size()) return;
+    Item item = inventory.get(index);
+    if (!(item instanceof Potion)) {
+        DisplayUtils.display("Cet objet ne peut pas être utilisé.");
+        return;
+    }
+
+    // On a une potion
+    Potion p = (Potion) item;
+    if (getHp() == getMaxHp()) {
+        DisplayUtils.display("Vos PV sont déjà au maximum, vous ne pouvez pas en boire.");
+        return;
+    }
+
+    // Calcul de la quantité réellement soignée (pour l'affichage)
+    int possibleHeal = getMaxHp() - getHp();
+    int healAmount   = Math.min(p.getHealAmount(), possibleHeal);
+
+    // Soigne et retire la potion de l'inventaire
+    receiveHealing(p.getHealAmount());
+    inventory.remove(index);
+
+    DisplayUtils.display(
+        "Vous buvez " + p.getName() +
+        " et récupérez " + healAmount + " PV."
+    );
+}
+
+     public void equipItem(int index) {
+        if (index < 0 || index >= inventory.size()) return;
+        Item item = inventory.get(index);
+        if (item instanceof Equipment) {
+            Equipment eq = (Equipment) item;
+            if (eq instanceof Weapon) {
+                equipWeapon((Weapon) eq);
+            } else if (eq instanceof Armor) {
+                equipArmor((Armor) eq);
+            }
+        } else {
+            DisplayUtils.display("Cet objet ne peut pas être équipé.");
+        }
+    }
+
     public void equipWeapon(Weapon weapon) {
+        if (equippedWeapon != null) {
+            equippedWeapon.setEquipped(false);
+        }
         this.equippedWeapon = weapon;
-        DisplayUtils.display(name + " équipe: " + weapon.getName());
+        weapon.setEquipped(true);
+        DisplayUtils.display(name + " équipe l'arme : " + weapon.getName());
+        displayStats();
     }
 
     public void equipArmor(Armor armor) {
+        if (equippedArmor != null) {
+            equippedArmor.setEquipped(false);
+        }
         this.equippedArmor = armor;
-        DisplayUtils.display(name + " équipe: " + armor.getName());
+        armor.setEquipped(true);
+        DisplayUtils.display(name + " équipe l'armure : " + armor.getName());
+        displayStats();
+    }
+
+    /** Affiche les PV, l'attaque et la défense actuels */
+    private void displayStats() {
+        DisplayUtils.display(
+            "Statistiques → PV: " + getHp() + "/" + getMaxHp() +
+            ", Attaque: " + getAttack() +
+            ", Défense: " + getDefense()
+        );
     }
 
     @Override
@@ -61,41 +135,9 @@ public class Player extends Entity {
         return attack + bonus;
     }
 
+    @Override
     public int getDefense() {
         int bonus = (equippedArmor != null) ? equippedArmor.getDefenseBonus() : 0;
         return defense + bonus;
-    }
-
-    public List<Item> getInventory() {
-        return inventory;
-    }
-
-    /** Utilise un objet (uniquement les potions) */
-    public void useItem(int index) {
-        if (index < 0 || index >= inventory.size()) return;
-        Item item = inventory.get(index);
-        if (item instanceof Potion) {
-            Potion p = (Potion) item;
-            this.receiveHealing(p.getHealAmount());
-            inventory.remove(index);
-            DisplayUtils.display("Vous buvez " + p.getName() +
-                                 " et récupérez " + p.getHealAmount() + " PV.");
-        } else {
-            DisplayUtils.display("Cet objet ne peut pas être utilisé.");
-        }
-    }
-
-    /** Équipe une arme ou une armure depuis l’inventaire */
-    public void equipItem(int index) {
-        if (index < 0 || index >= inventory.size()) return;
-        Item item = inventory.get(index);
-
-        if (item instanceof Weapon) {
-            equipWeapon((Weapon) item);
-        } else if (item instanceof Armor) {
-            equipArmor((Armor) item);
-        } else {
-            DisplayUtils.display("Cet objet ne peut pas être équipé.");
-        }
     }
 }

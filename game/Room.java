@@ -1,8 +1,8 @@
 package game;
-import utils.DisplayUtils;
 import entities.Monster;
 import entities.Player;
 import items.Potion;
+import utils.DisplayUtils;
 import utils.RandomUtils;
 
 public class Room {
@@ -81,7 +81,10 @@ public class Room {
                     combat(player, monster);
                     if (!monster.isAlive()) {
                         DisplayUtils.display(monster.getName() + " est vaincu !");
-                        player.gainXP(50);
+
+                        // → XP proportionnel à la force du monstre
+                        int xpGain = monster.getAttack() + monster.getDefense()+50;
+                        player.gainXP(xpGain);
                         content = RoomContent.EMPTY;
                     }
                 }
