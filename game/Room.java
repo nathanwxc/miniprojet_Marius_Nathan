@@ -2,11 +2,12 @@ package game;
 
 import entities.Monster;
 import entities.Player;
+import items.Potion;
 import utils.RandomUtils;
 
 public class Room {
     public enum RoomContent {
-        EMPTY, MONSTER, EXIT
+        EMPTY, MONSTER, LOOT, EXIT
     }
 
     private int x, y;
@@ -46,7 +47,10 @@ public class Room {
         } else if (roll < 60) {
             content = RoomContent.MONSTER;
             monster = new Monster("Gobelin", 20, 10, 2);
-        } else {
+        } else if (roll < 95) {
+            content = RoomContent.LOOT;
+        }
+        else {
             content = RoomContent.EXIT;
         }
     }
@@ -65,6 +69,11 @@ public class Room {
                     }
                 }
                 break;
+             case LOOT:
+                System.out.println("Vous trouvez une potion de soin.");
+                player.addItem(new Potion("Potion de soin", 20));
+                content = RoomContent.EMPTY;
+                break;    
             case EXIT:
                 System.out.println("Vous avez trouvé la sortie du donjon !");
                 break;
