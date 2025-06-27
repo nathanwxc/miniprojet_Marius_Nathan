@@ -1,7 +1,7 @@
 package utils;
 
 public class DisplayUtils {
-    /** Affiche un message, puis fait une pause de 1000 ms */
+    /* Affiche un message, puis fait une pause de 1000 ms */
     public static void display(String message) {
         System.out.println(message);
         try {

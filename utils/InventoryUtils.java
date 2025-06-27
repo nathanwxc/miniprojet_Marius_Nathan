@@ -9,7 +9,7 @@ import items.Weapon;
 import items.Armor;
 
 public class InventoryUtils {
-    /** Affiche et gère l’inventaire du joueur */
+    /* Affiche et gère l’inventaire du joueur */
     public static void openInventory(Player player, Scanner scanner) {
         List<Item> inventory = player.getInventory();
         if (inventory.isEmpty()) {
